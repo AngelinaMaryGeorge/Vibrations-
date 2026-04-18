@@ -2,21 +2,31 @@ import numpy as np
 import matplotlib.pyplot as p
 from matplotlib.animation import FuncAnimation
 
+
 #Conditions to input
 print("Input the parameters for the Vibrating String (Fundamental Mode)")
-l = float(input("Enter the length of the string (l, m) //e.g., 2.0: "))
-a = float(input("Enter the maximum amplitude (a, m) //e.g., 0.1: "))
-c = float(input("Enter the wave speed (c, m/s) //e.g., 50.0: "))
-xp= float(input("Enter the specific position to track (x_p, m) [0 < point_to_track < length_of_string]: "))
+l = float(input("Enter the length of the string (l in m) (;e.g.: 2.0): "))
+c = float(input("Enter the wave speed (c in m/s) (;e.g.: 50.0): "))
+xp= float(input("Enter the specific position to track (x_p in m) [0 < point_to_track < length_of_string]: "))
+m=int(input("Enter the number of modes:"))
+modes=[]
+if m>=0:
+    for i in range(m):
+        gamma= float(input(f"Enter the damping coefficient (gamma in kg/s) (;e.g.: 0.0 for no damping) for mode number {i+1}: "))
+        a = float(input(f"Enter the maximum amplitude (a in m) (;e.g.: 0.1) for mode number {i+1}: "))
+        modes.append((gamma, a))
+else:
+    print("Error, stop the program!(~_~)")
+
 
 if not (0 < xp < l):
     print(f"Error: The tracking point x_p={xp} must be strictly between 0 and l={l}. Setting point to track = length/2.")
     xp= l / 2
 
 
-period = 2 * l / c#period of refernce
+period = 2 * l / c#period of reference
 print(f"\n*FYI: One full period of oscillation is T = {period:.4f} seconds.")
-ts = float(input("Enter the total simulation time (s) //e.g., 2.0: "))
+ts = float(input("Enter the total simulation time (s) (;e.g.: 2.0): "))
 if ts < period:
     print(f"Warning: Simulation time is less than one period ({period:.4f} s).")
 print("\nGenerating animation...")
@@ -30,9 +40,10 @@ tv= np.linspace(0, ts, nt) # Time vector
 
 
 def displacement(x, t, l, a, c):
-    spatial_part = a * np.sin(np.pi * x / l)
-    time_part = np.cos(np.pi * c * t / l)
-    return spatial_part * time_part
+    y=0
+    for gamma, a in [modes[i]]:
+         y += a * np.sin(np.pi * (i+1) * x / l) * np.cos(np.pi * c * (i+1) * t / l) / (np.exp(gamma * t)) #damped oscillation
+    return y #damped oscillation
 
 #Animation
 fig, ax = p.subplots(figsize=(10, 5))
