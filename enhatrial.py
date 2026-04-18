@@ -41,8 +41,9 @@ tv= np.linspace(0, ts, nt) # Time vector
 
 def displacement(x, t, l, a, c):
     y=0
-    for gamma, a in [modes[i]]:
-         y += a * np.sin(np.pi * (i+1) * x / l) * np.cos(np.pi * c * (i+1) * t / l) / (np.exp(gamma * t)) #damped oscillation
+    for i, (gamma, a) in enumerate(modes):
+         n=i+1
+         y += a * np.sin(np.pi * n * x / l) * np.cos(np.pi * c * n * t / l) / (np.exp(gamma * t)) #damped oscillation
     return y #damped oscillation
 
 #Animation
